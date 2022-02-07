@@ -18,13 +18,9 @@ namespace HDPortraits
         private static bool overridden = false;
         private static MetadataModel meta = null;
         internal static readonly PerScreen<bool> justOpened = new(() => true);
-        public static MethodBase TargetMethod()
-        {
-            if (ModEntry.helper.ModRegistry.IsLoaded("GZhynko.DialogueBoxRedesign"))
-                return AccessTools.TypeByName("DialogueBoxRedesign.Patching.HarmonyPatchExecutors").MethodNamed("DrawPortrait");
-            else
-                return typeof(DialogueBox).MethodNamed("drawPortrait");
-        }
+
+        [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]
+        [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             foreach (var code in patcher.Run(instructions))
@@ -33,6 +29,10 @@ namespace HDPortraits
         public static ILHelper SetupPatch()
         {
             return new ILHelper("Portrait Region Patch")
+                .Add(new CodeInstruction[] {
+                    new(OpCodes.Ldarg_0),
+                    new(OpCodes.Call,typeof(PortraitDrawPatch).MethodNamed("Init"))
+                })
                 .SkipTo(new CodeInstruction[]
                 {
                     new(OpCodes.Ldarg_0),
@@ -61,20 +61,23 @@ namespace HDPortraits
                     new(OpCodes.Call, typeof(Vector2).MethodNamed("get_Zero"))
                 })
                 .Remove()
-                .Add(new CodeInstruction(OpCodes.Call,typeof(PortraitDrawPatch).MethodNamed("GetScale")))
+                .Add(new CodeInstruction[]{
+                    new(OpCodes.Call,typeof(PortraitDrawPatch).MethodNamed("GetScale")),
+                    new(OpCodes.Call,typeof(PortraitDrawPatch).MethodNamed("Finish"))
+                })
                 .Finish();
         }
-        public static void Prefix(DialogueBox __instance)
+        public static void Init(DialogueBox box)
         {
-            meta = ModEntry.portraitSizes.TryGetValue(__instance.characterDialogue.speaker?.name, out var data) ? data : null;
+            meta = ModEntry.portraitSizes.TryGetValue(box.characterDialogue.speaker?.name, out var data) ? data : null;
             if (justOpened.Value)
             {
                 meta?.Animation?.Reset();
                 justOpened.Value = false;
             }
-            overridden = __instance.characterDialogue.overridePortrait != null && (meta == null || !meta.AlwaysUse);
+            overridden = box.characterDialogue.overridePortrait != null && (meta == null || !meta.AlwaysUse);
         }
-        public static void Postfix()
+        public static void Finish()
         {
             overridden = false;
             meta = null;
@@ -86,9 +89,10 @@ namespace HDPortraits
         public static Rectangle GetData(Texture2D texture, int index)
         {
             int asize = !overridden ? meta?.Size ?? 64 : 64;
-            return (meta?.Animation != null) ?
+            Rectangle ret = (meta?.Animation != null) ?
                 meta.Animation.GetSourceRegion(texture, asize, index, Game1.currentGameTime.ElapsedGameTime.Milliseconds) :
                 Game1.getSourceRectForStandardTileSheet(texture, index, asize, asize);
+            return ret;
         }
         public static float GetScale()
         {

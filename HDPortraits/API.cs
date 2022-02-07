@@ -4,7 +4,7 @@ using StardewValley;
 
 namespace HDPortraits
 {
-    class API : IHDPortraitsAPI
+    public class API : IHDPortraitsAPI
     {
         public void DrawPortrait(SpriteBatch b, NPC npc, int index, Rectangle region, Color? color = null, bool reset = false)
         {
