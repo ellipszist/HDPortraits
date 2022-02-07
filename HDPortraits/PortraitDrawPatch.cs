@@ -17,6 +17,7 @@ namespace HDPortraits
         private static ILHelper patcher = SetupPatch();
         private static bool overridden = false;
         private static MetadataModel meta = null;
+        internal static readonly PerScreen<bool> justOpened = new(() => true);
         public static MethodBase TargetMethod()
         {
             if (ModEntry.helper.ModRegistry.IsLoaded("GZhynko.DialogueBoxRedesign"))
@@ -66,7 +67,11 @@ namespace HDPortraits
         public static void Prefix(DialogueBox __instance)
         {
             meta = ModEntry.portraitSizes.TryGetValue(__instance.characterDialogue.speaker?.name, out var data) ? data : null;
-            meta?.Animation?.Reset();
+            if (justOpened.Value)
+            {
+                meta?.Animation?.Reset();
+                justOpened.Value = false;
+            }
             overridden = __instance.characterDialogue.overridePortrait != null && (meta == null || !meta.AlwaysUse);
         }
         public static void Postfix()
