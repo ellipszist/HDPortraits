@@ -23,6 +23,8 @@ namespace HDPortraits
             if (reset)
                 metadata.Animation?.Reset();
 
+            PortraitDrawPatch.lastLoaded.Value.Add(metadata);
+
             Texture2D texture = metadata.overrideTexture ?? npc.Portrait;
             Rectangle rect = (metadata.Animation != null) ?
                 metadata.Animation.GetSourceRegion(texture, metadata.Size, index, elapsed) :

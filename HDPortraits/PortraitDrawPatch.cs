@@ -17,7 +17,7 @@ namespace HDPortraits
         private static ILHelper patcher = SetupPatch();
         private static bool overridden = false;
         private static MetadataModel meta = null;
-        internal static readonly PerScreen<bool> justOpened = new(() => true);
+        internal static readonly PerScreen<HashSet<MetadataModel>> lastLoaded = new(() => new());
 
         [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]
         [HarmonyTranspiler]
@@ -70,11 +70,7 @@ namespace HDPortraits
         public static void Init(DialogueBox box)
         {
             meta = ModEntry.portraitSizes.TryGetValue(box.characterDialogue.speaker?.name, out var data) ? data : null;
-            if (justOpened.Value)
-            {
-                meta?.Animation?.Reset();
-                justOpened.Value = false;
-            }
+            lastLoaded.Value.Add(meta);
             overridden = box.characterDialogue.overridePortrait != null && (meta == null || !meta.AlwaysUse);
         }
         public static void Finish()
