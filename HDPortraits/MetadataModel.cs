@@ -9,7 +9,6 @@ namespace HDPortraits
     {
         public int Size { set; get; } = 64;
         public AnimationModel Animation { get; set; } = null;
-        public bool AlwaysUse { get; set; } = false;
         public string Portrait { 
             get { return portraitPath; }
             set {

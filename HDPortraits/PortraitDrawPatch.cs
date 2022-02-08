@@ -71,7 +71,7 @@ namespace HDPortraits
         {
             meta = ModEntry.portraitSizes.TryGetValue(box.characterDialogue.speaker?.name, out var data) ? data : null;
             lastLoaded.Value.Add(meta);
-            overridden = box.characterDialogue.overridePortrait != null && (meta == null || !meta.AlwaysUse);
+            overridden = box.characterDialogue.overridePortrait != null;
         }
         public static void Finish()
         {

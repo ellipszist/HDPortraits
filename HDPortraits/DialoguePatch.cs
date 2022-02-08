@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using StardewValley;
 using StardewValley.Menus;
 
 namespace HDPortraits
@@ -6,7 +7,7 @@ namespace HDPortraits
     [HarmonyPatch]
     class DialoguePatch
     {
-        [HarmonyPatch(typeof(DialogueBox), "closeDialogue")]
+        [HarmonyPatch(typeof(Dialogue), "exitCurrentDialogue")]
         [HarmonyPostfix]
         public static void Cleanup()
         {
