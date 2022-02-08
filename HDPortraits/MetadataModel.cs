@@ -13,18 +13,7 @@ namespace HDPortraits
             get { return portraitPath; }
             set {
                 portraitPath = value;
-                stored = null;
-                if(portraitPath != null)
-                {
-                    try
-                    {
-                        stored = ModEntry.helper.Content.Load<Texture2D>(value, ContentSource.GameContent);
-                    } catch(ContentLoadException e)
-                    {
-                        ModEntry.monitor.Log("Could not find image at game asset path: '" + value + "' .", LogLevel.Warn);
-                        ModEntry.monitor.Log(e.StackTrace, LogLevel.Warn);
-                    }
-                }
+                Reload();
             }
         }
         public Texture2D overrideTexture
@@ -35,5 +24,21 @@ namespace HDPortraits
         }
         private Texture2D stored = null;
         private string portraitPath = null;
+        public void Reload()
+        {
+            Animation?.Reset();
+            if (portraitPath != null)
+            {
+                try
+                {
+                    stored = ModEntry.helper.Content.Load<Texture2D>(portraitPath, ContentSource.GameContent);
+                }
+                catch (ContentLoadException e)
+                {
+                    ModEntry.monitor.Log("Could not find image at game asset path: '" + portraitPath + "' .", LogLevel.Warn);
+                    ModEntry.monitor.Log(e.StackTrace, LogLevel.Warn);
+                }
+            }
+        }
     }
 }
