@@ -6,5 +6,5 @@
   "UniqueID": "tlitookilakin.HDPortraits",
   "EntryDll": "HDPortraits.dll",
   "MinimumApiVersion": "3.13",
-  "UpdateKeys": [ "GitHub:tlitookilakin/HDPortraits", "Nexus:10971" ]
+  "UpdateKeys": [ "GitHub:tlitookilakin/HDPortraits", "Nexus:10971", "ModDrop:1103418" ]
 }
