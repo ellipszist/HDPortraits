@@ -12,7 +12,7 @@ namespace HDPortraits
         public static void Cleanup()
         {
             foreach (var item in PortraitDrawPatch.lastLoaded.Value)
-                item.Reload();
+                item?.Reload();
             PortraitDrawPatch.lastLoaded.Value.Clear();
         }
     }
