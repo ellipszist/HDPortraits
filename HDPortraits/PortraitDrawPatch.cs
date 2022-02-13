@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
@@ -17,7 +18,15 @@ namespace HDPortraits
         private static ILHelper patcher = SetupPatch();
         private static bool overridden = false;
         private static MetadataModel meta = null;
+        private static FieldInfo islandwear = typeof(NPC).FieldNamed("isWearingIslandAttire");
         internal static readonly PerScreen<HashSet<MetadataModel>> lastLoaded = new(() => new());
+        internal static readonly PerScreen<string> contextSuffix = new();
+
+        public static void Warped(object sender, WarpedEventArgs ev)
+        {
+            string suffix = ev.NewLocation.getMapProperty("UniquePortrait");
+            contextSuffix.Value = (suffix != null) ? "_" + suffix : "";
+        }
 
         [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]
         [HarmonyTranspiler]
@@ -69,7 +78,8 @@ namespace HDPortraits
         }
         public static void Init(DialogueBox box)
         {
-            meta = ModEntry.portraitSizes.TryGetValue(box.characterDialogue.speaker?.name, out var data) ? data : null;
+            NPC npc = box.characterDialogue.speaker;
+            meta = ModEntry.portraitSizes.TryGetValue((npc?.name ?? "") + ((bool)islandwear.GetValue(npc) ? "_Beach" : contextSuffix.Value), out var data) ? data : null;
             if(meta != null)
                 lastLoaded.Value.Add(meta);
             overridden = box.characterDialogue.overridePortrait != null;
