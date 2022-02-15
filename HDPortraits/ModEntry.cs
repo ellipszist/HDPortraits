@@ -15,6 +15,7 @@ namespace HDPortraits
         private static IHDPortraitsAPI api = new API();
 
         internal static Dictionary<string, MetadataModel> portraitSizes = new();
+        internal static Dictionary<string, MetadataModel> backupPortraits = new();
 
         public override void Entry(IModHelper helper)
         {
@@ -25,6 +26,7 @@ namespace HDPortraits
             harmony = new(ModManifest.UniqueID);
             ModID = ModManifest.UniqueID;
             helper.Events.GameLoop.DayStarted += (object sender, DayStartedEventArgs ev) => ReloadData();
+            helper.Events.Player.Warped += PortraitDrawPatch.Warped;
             harmony.PatchAll();
         }
         public override object GetApi()
@@ -42,7 +44,35 @@ namespace HDPortraits
         public static void ReloadData()
         {
             monitor.Log("Reloading portrait data...", LogLevel.Debug);
-            portraitSizes = helper.Content.Load<Dictionary<string, MetadataModel>>("Mods/HDPortraits", ContentSource.GameContent);
+            backupPortraits = helper.Content.Load<Dictionary<string, MetadataModel>>("Mods/HDPortraits", ContentSource.GameContent);
+            portraitSizes.Clear();
+        }
+        public static bool TryGetMetadata(string name, string suffix, out MetadataModel meta)
+        {
+            if (((suffix != null && portraitSizes.TryGetValue($"Mods/HDPortraits/{name}_{suffix}", out meta)) || 
+                portraitSizes.TryGetValue($"Mods/HDPortraits/{name}", out meta)) && meta != null)
+            {
+                return true; //cached
+            }
+
+            string path = $"Mods/HDPortraits/{name}_{suffix}";
+
+            if (suffix != null && suffix.Length > 0 && (Utils.TryLoadAsset(path, out meta) || backupPortraits.TryGetValue(path, out meta)) && meta != null)
+            {
+                portraitSizes[path] = meta;
+                return true; //suffix
+            }
+
+            path = $"Mods/HDPortraits/{name}";
+
+            if ((Utils.TryLoadAsset(path, out meta) || backupPortraits.TryGetValue(path, out meta)) && meta != null)
+            {
+                portraitSizes[path] = meta;
+                return true; //base
+            }
+
+            meta = null;
+            return false; //not found
         }
     }
 }

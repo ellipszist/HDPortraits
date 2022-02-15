@@ -16,16 +16,14 @@ namespace HDPortraits
     class PortraitDrawPatch
     {
         private static ILHelper patcher = SetupPatch();
-        private static bool overridden = false;
-        private static MetadataModel meta = null;
-        private static FieldInfo islandwear = typeof(NPC).FieldNamed("isWearingIslandAttire");
         internal static readonly PerScreen<HashSet<MetadataModel>> lastLoaded = new(() => new());
         internal static readonly PerScreen<string> contextSuffix = new();
+        internal static readonly PerScreen<MetadataModel> currentMeta = new();
+        internal static readonly PerScreen<bool> overridden = new(() => false);
 
         public static void Warped(object sender, WarpedEventArgs ev)
         {
-            string suffix = ev.NewLocation.getMapProperty("UniquePortrait");
-            contextSuffix.Value = (suffix != null) ? "_" + suffix : "";
+            contextSuffix.Value = ev.NewLocation.getMapProperty("UniquePortrait");
         }
 
         [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]
@@ -38,10 +36,6 @@ namespace HDPortraits
         public static ILHelper SetupPatch()
         {
             return new ILHelper("Portrait Region Patch")
-                .Add(new CodeInstruction[] {
-                    new(OpCodes.Ldarg_0),
-                    new(OpCodes.Call,typeof(PortraitDrawPatch).MethodNamed("Init"))
-                })
                 .SkipTo(new CodeInstruction[]
                 {
                     new(OpCodes.Ldarg_0),
@@ -71,39 +65,29 @@ namespace HDPortraits
                 })
                 .Remove()
                 .Add(new CodeInstruction[]{
-                    new(OpCodes.Call,typeof(PortraitDrawPatch).MethodNamed("GetScale")),
-                    new(OpCodes.Call,typeof(PortraitDrawPatch).MethodNamed("Finish"))
+                    new(OpCodes.Call,typeof(PortraitDrawPatch).MethodNamed("GetScale"))
                 })
                 .Finish();
         }
-        public static void Init(DialogueBox box)
-        {
-            NPC npc = box.characterDialogue.speaker;
-            meta = ModEntry.portraitSizes.TryGetValue((npc?.name ?? "") + ((bool)islandwear.GetValue(npc) ? "_Beach" : contextSuffix.Value), out var data) ? data : null;
-            if(meta != null)
-                lastLoaded.Value.Add(meta);
-            overridden = box.characterDialogue.overridePortrait != null;
-        }
-        public static void Finish()
-        {
-            overridden = false;
-            meta = null;
-        }
         public static Texture2D SwapTexture(Texture2D texture)
         {
-            return overridden ? texture : meta?.overrideTexture ?? texture;
+            return overridden.Value ? texture : currentMeta.Value?.overrideTexture ?? texture;
         }
         public static Rectangle GetData(Texture2D texture, int index)
         {
-            int asize = !overridden ? meta?.Size ?? 64 : 64;
-            Rectangle ret = (meta?.Animation != null) ?
-                meta.Animation.GetSourceRegion(texture, asize, index, Game1.currentGameTime.ElapsedGameTime.Milliseconds) :
+            int asize = !overridden.Value ? currentMeta.Value?.Size ?? 64 : 64;
+            Rectangle ret = (currentMeta.Value?.Animation != null) ?
+                currentMeta.Value.Animation.GetSourceRegion(texture, asize, index, Game1.currentGameTime.ElapsedGameTime.Milliseconds) :
                 Game1.getSourceRectForStandardTileSheet(texture, index, asize, asize);
             return ret;
         }
+        public static string GetSuffix(NPC npc)
+        {
+            return (bool)DialoguePatch.islandwear.GetValue(npc) ? "beach" : contextSuffix.Value;
+        }
         public static float GetScale()
         {
-            return !overridden ? 256f / (meta?.Size ?? 64) : 4f;
+            return !overridden.Value ? 256f / (currentMeta.Value?.Size ?? 64) : 4f;
         }
     }
 }

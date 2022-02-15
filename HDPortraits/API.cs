@@ -17,9 +17,9 @@ namespace HDPortraits
         }
         public (Rectangle, Texture2D) GetTextureAndRegion(NPC npc, int index, int elapsed = -1, bool reset = false)
         {
-            if (!ModEntry.portraitSizes.TryGetValue(npc.name, out var metadata))
+            if (!ModEntry.TryGetMetadata(npc.getTextureName(), PortraitDrawPatch.GetSuffix(npc), out var metadata))
                 return (Game1.getSourceRectForStandardTileSheet(npc.Portrait, index, 64, 64), npc.Portrait);
-
+            
             if (reset)
                 metadata.Animation?.Reset();
 

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using StardewModdingAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,19 @@ namespace HDPortraits
                 if (int.TryParse(val, out int num))
                     ret[key] = num;
             return ret;
+        }
+
+        public static bool TryLoadAsset<T>(string path, out T value)
+        {
+            try
+            {
+                value = ModEntry.helper.Content.Load<T>(path, ContentSource.GameContent);
+                return true;
+            } catch(Exception _)
+            {
+                value = default;
+                return false;
+            }
         }
     }
 }
