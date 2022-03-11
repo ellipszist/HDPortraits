@@ -36,7 +36,7 @@ namespace HDPortraits
         }
         public static ILHelper SetupPatch()
         {
-            return new ILHelper("Portrait Region Patch")
+            return new ILHelper("Dialogue Patch")
                 .SkipTo(new CodeInstruction[]
                 {
                     new(OpCodes.Ldarg_0),
@@ -51,7 +51,7 @@ namespace HDPortraits
                     new(OpCodes.Ldfld, typeof(DialogueBox).FieldNamed("characterDialogue")),
                     new(OpCodes.Callvirt, typeof(Dialogue).MethodNamed("getPortraitIndex"))
                 })
-                .RemoveAt(new CodeInstruction[]
+                .Remove(new CodeInstruction[]
                 {
                     new(OpCodes.Ldc_I4_S, 64),
                     new(OpCodes.Ldc_I4_S, 64),
@@ -61,7 +61,7 @@ namespace HDPortraits
                 .SkipTo(new CodeInstruction[]
                 {
                     new(OpCodes.Call, typeof(Color).MethodNamed("get_White")),
-                    new(OpCodes.Ldc_R4, null),
+                    new(OpCodes.Ldc_R4, 0f),
                     new(OpCodes.Call, typeof(Vector2).MethodNamed("get_Zero"))
                 })
                 .Remove()

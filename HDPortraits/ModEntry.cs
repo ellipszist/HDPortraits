@@ -45,6 +45,11 @@ namespace HDPortraits
         {
             monitor.Log("Reloading portrait data...", LogLevel.Debug);
             backupPortraits = helper.Content.Load<Dictionary<string, MetadataModel>>("Mods/HDPortraits", ContentSource.GameContent);
+            foreach ((string id, MetadataModel meta) in backupPortraits)
+            {
+                meta.defaultPath = "Portraits/" + id;
+                meta.Reload();
+            }
             portraitSizes.Clear();
         }
         public static bool TryGetMetadata(string name, string suffix, out MetadataModel meta)
@@ -59,12 +64,14 @@ namespace HDPortraits
 
             if (suffix != null && (Utils.TryLoadAsset("Mods/HDPortraits/" + path, out meta) || backupPortraits.TryGetValue(path, out meta)) && meta != null)
             {
+                meta.defaultPath = "Portraits/" + path;
                 portraitSizes[path] = meta;
                 return true; //suffix
             }
 
             if ((Utils.TryLoadAsset("Mods/HDPortraits/" + name, out meta) || backupPortraits.TryGetValue(name, out meta)) && meta != null)
             {
+                meta.defaultPath = "Portraits/" + name;
                 portraitSizes[name] = meta;
                 return true; //base
             }
