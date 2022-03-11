@@ -23,7 +23,8 @@ namespace HDPortraits
 
         public static void Warped(object sender, WarpedEventArgs ev)
         {
-            contextSuffix.Value = ev.NewLocation.getMapProperty("UniquePortrait");
+            var context = ev.NewLocation.getMapProperty("UniquePortrait");
+            contextSuffix.Value = (context != "") ? context : null;
         }
 
         [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]

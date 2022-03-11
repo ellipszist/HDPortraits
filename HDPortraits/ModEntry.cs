@@ -49,25 +49,23 @@ namespace HDPortraits
         }
         public static bool TryGetMetadata(string name, string suffix, out MetadataModel meta)
         {
-            if (((suffix != null && portraitSizes.TryGetValue($"Mods/HDPortraits/{name}_{suffix}", out meta)) || 
-                portraitSizes.TryGetValue($"Mods/HDPortraits/{name}", out meta)) && meta != null)
+            if (((suffix != null && portraitSizes.TryGetValue($"{name}_{suffix}", out meta)) || 
+                portraitSizes.TryGetValue(name, out meta)) && meta != null)
             {
                 return true; //cached
             }
 
-            string path = $"Mods/HDPortraits/{name}_{suffix}";
+            string path = $"{name}_{suffix}";
 
-            if (suffix != null && suffix.Length > 0 && (Utils.TryLoadAsset(path, out meta) || backupPortraits.TryGetValue(path, out meta)) && meta != null)
+            if (suffix != null && (Utils.TryLoadAsset("Mods/HDPortraits/" + path, out meta) || backupPortraits.TryGetValue(path, out meta)) && meta != null)
             {
                 portraitSizes[path] = meta;
                 return true; //suffix
             }
 
-            path = $"Mods/HDPortraits/{name}";
-
-            if ((Utils.TryLoadAsset(path, out meta) || backupPortraits.TryGetValue(path, out meta)) && meta != null)
+            if ((Utils.TryLoadAsset("Mods/HDPortraits/" + name, out meta) || backupPortraits.TryGetValue(name, out meta)) && meta != null)
             {
-                portraitSizes[path] = meta;
+                portraitSizes[name] = meta;
                 return true; //base
             }
 
