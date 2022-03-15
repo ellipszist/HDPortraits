@@ -17,6 +17,7 @@ namespace HDPortraits
             }
         }
         public readonly RLazy<Texture2D> overrideTexture;
+
         internal string defaultPath = null;
         private Texture2D savedDefault = null;
         private string portraitPath = null;

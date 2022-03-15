@@ -72,7 +72,10 @@ namespace HDPortraits
         }
         public static Texture2D SwapTexture(Texture2D texture)
         {
-            return overridden.Value ? texture : currentMeta.Value?.overrideTexture.Value ?? texture;
+            if (overridden.Value)
+                return texture;
+
+            return currentMeta.Value?.overrideTexture?.Value ?? texture;
         }
         public static Rectangle GetData(Texture2D texture, int index)
         {
