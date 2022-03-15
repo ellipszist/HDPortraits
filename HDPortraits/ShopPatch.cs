@@ -42,7 +42,7 @@ namespace HDPortraits
                 return new(0, 0, 64, 64);
 
             Rectangle ret = (current.Animation is not null) ?
-                current.Animation.GetSourceRegion(current.overrideTexture ?? current.GetDefault(), current.Size, 0, Game1.currentGameTime.ElapsedGameTime.Milliseconds) :
+                current.Animation.GetSourceRegion(current.overrideTexture.Value ?? current.GetDefault(), current.Size, 0, Game1.currentGameTime.ElapsedGameTime.Milliseconds) :
                 new(0, 0, current.Size, current.Size);
             return ret;
         }

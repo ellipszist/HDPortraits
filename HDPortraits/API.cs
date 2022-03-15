@@ -25,7 +25,7 @@ namespace HDPortraits
 
             PortraitDrawPatch.lastLoaded.Value.Add(metadata);
 
-            Texture2D texture = metadata.overrideTexture ?? npc.Portrait;
+            Texture2D texture = metadata.overrideTexture.Value ?? npc.Portrait;
             Rectangle rect = (metadata.Animation != null) ?
                 metadata.Animation.GetSourceRegion(texture, metadata.Size, index, elapsed) :
                 Game1.getSourceRectForStandardTileSheet(texture, index, metadata.Size, metadata.Size);
