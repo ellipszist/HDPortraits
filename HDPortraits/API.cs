@@ -27,10 +27,22 @@ namespace HDPortraits
         public void DrawPortrait(SpriteBatch b, string name, string suffix, int index, Rectangle region, Color? color = null, bool reset = false)
         {
             (Rectangle source, Texture2D tex) = GetTextureAndRegion(name, suffix, index, Game1.currentGameTime.ElapsedGameTime.Milliseconds, reset);
+            b.Draw(tex, region, source, color ?? Color.White);
         }
         public void DrawPortrait(SpriteBatch b, string name, string suffix, int index, Point position, Color? color = null, bool reset = false)
         {
             DrawPortrait(b, name, suffix, index, new Rectangle(position, new(256, 256)), color, reset);
+        }
+        public void DrawPortraitOrOverride(SpriteBatch b, NPC npc, int index, Rectangle region, Color? color = null, bool reset = false)
+        {
+            if (npc is not null)
+                DrawPortrait(b, npc, index, region, color, reset);
+            else if(PortraitDrawPatch.overrideName.Value is not null)
+                DrawPortrait(b, PortraitDrawPatch.overrideName.Value, null, index, region, color, reset);
+        }
+        public void DrawPortraitOrOverride(SpriteBatch b, NPC npc, int index, Point position, Color? color = null, bool reset = false)
+        {
+            DrawPortraitOrOverride(b, npc, index, new Rectangle(position, new(256, 256)), color, reset);
         }
         public (Rectangle, Texture2D) GetTextureAndRegion(NPC npc, int index, int elapsed = -1, bool reset = false)
         {
