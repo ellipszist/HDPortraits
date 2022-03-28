@@ -7,6 +7,10 @@ namespace HDPortraits
     public interface IHDPortraitsAPI
     {
         /// <summary>
+        /// The name of the current override portrait to use
+        /// </summary>
+        public string OverrideName { set; get; }
+        /// <summary>
         /// Draw NPC Portrait over region
         /// </summary>
         /// <param name="b">The spritebatch to draw with</param>
@@ -33,11 +37,44 @@ namespace HDPortraits
         /// <param name="index">Portrait index</param>
         /// <param name="elapsed">Time since last call (for animation)</param>
         /// <param name="reset">Whether or not to reset animations this tick</param>
-        /// <returns>The source region & the texture to use</returns>
+        /// <returns>The source region &amp; the texture to use</returns>
         public (Rectangle, Texture2D) GetTextureAndRegion(NPC npc, int index, int elapsed = -1, bool reset = false);
         /// <summary>
         /// Forces HD Portraits to reload its metadata.
         /// </summary>
         public void ReloadData();
+        /// <summary>
+        /// Draw NPC or custom portrait over region
+        /// </summary>
+        /// <param name="b">The spritebatch to draw with</param>
+        /// <param name="name">Override name</param>
+        /// <param name="suffix">Context suffix, or null</param>
+        /// <param name="index">Portrait index</param>
+        /// <param name="region">The region of the screen to draw to</param>
+        /// <param name="color">Tint</param>
+        /// <param name="reset">Whether or not to reset animations this tick</param>
+        public void DrawPortrait(SpriteBatch b, string name, string suffix, int index, Rectangle region, Color? color = null, bool reset = false);
+
+        /// <summary>
+        /// Draw NPC or custom portrait with default size
+        /// </summary>
+        /// <param name="b">The spritebatch to draw with</param>
+        /// <param name="name">Override name</param>
+        /// <param name="suffix">Context suffix, or null</param>
+        /// <param name="index">Portrait index</param>
+        /// <param name="position">The position on the screen to draw at</param>
+        /// <param name="color">Tint</param>
+        /// <param name="reset">Whether or not to reset animations this tick</param>
+        public void DrawPortrait(SpriteBatch b, string name, string suffix, int index, Point position, Color? color = null, bool reset = false);
+        /// <summary>
+        /// Retrieves the texture and texture region to use for a portrait
+        /// </summary>
+        /// <param name="name">Override name</param>
+        /// <param name="suffix">Context suffix, or null</param>
+        /// <param name="index">Portrait index</param>
+        /// <param name="elapsed">Time since last call (for animation)</param>
+        /// <param name="reset">Whether or not to reset animations this tick</param>
+        /// <returns>The source region &amp; the texture to use</returns>
+        public (Rectangle, Texture2D) GetTextureAndRegion(string name, string suffix, int index, int elapsed = -1, bool reset = false);
     }
 }

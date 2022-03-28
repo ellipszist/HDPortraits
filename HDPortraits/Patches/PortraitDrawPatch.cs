@@ -8,24 +8,20 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 using System.Reflection.Emit;
+using HDPortraits.Models;
 
-namespace HDPortraits
+namespace HDPortraits.Patches
 {
     [HarmonyPatch]
     class PortraitDrawPatch
     {
         private static ILHelper patcher = SetupPatch();
         internal static readonly PerScreen<HashSet<MetadataModel>> lastLoaded = new(() => new());
-        internal static readonly PerScreen<string> contextSuffix = new();
         internal static readonly PerScreen<MetadataModel> currentMeta = new();
-        internal static readonly PerScreen<bool> overridden = new(() => false);
-
-        public static void Warped(object sender, WarpedEventArgs ev)
-        {
-            var context = ev.NewLocation.getMapProperty("UniquePortrait");
-            contextSuffix.Value = (context != "") ? context : null;
-        }
+        internal static readonly PerScreen<Dictionary<string, string>> EventOverrides = new(() => new());
+        internal static readonly PerScreen<string> overrideName = new();
 
         [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]
         [HarmonyTranspiler]
@@ -72,14 +68,11 @@ namespace HDPortraits
         }
         public static Texture2D SwapTexture(Texture2D texture)
         {
-            if (overridden.Value)
-                return texture;
-
             return currentMeta.Value?.overrideTexture?.Value ?? texture;
         }
         public static Rectangle GetData(Texture2D texture, int index)
         {
-            int asize = !overridden.Value ? currentMeta.Value?.Size ?? 64 : 64;
+            int asize = currentMeta.Value?.Size ?? 64;
             Rectangle ret = (currentMeta.Value?.Animation != null) ?
                 currentMeta.Value.Animation.GetSourceRegion(texture, asize, index, Game1.currentGameTime.ElapsedGameTime.Milliseconds) :
                 Game1.getSourceRectForStandardTileSheet(texture, index, asize, asize);
@@ -87,11 +80,11 @@ namespace HDPortraits
         }
         public static string GetSuffix(NPC npc)
         {
-            return (bool)DialoguePatch.islandwear.GetValue(npc) ? "beach" : contextSuffix.Value;
+            return (bool)DialoguePatch.islandwear.GetValue(npc) ? "Beach" : npc.uniquePortraitActive ? npc.currentLocation.Name : null;
         }
         public static float GetScale()
         {
-            return !overridden.Value ? 256f / (currentMeta.Value?.Size ?? 64) : 4f;
+            return currentMeta.Value is not null ? 256f / currentMeta.Value.Size : 4f;
         }
     }
 }

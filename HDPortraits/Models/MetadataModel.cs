@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using System;
 
-namespace HDPortraits
+namespace HDPortraits.Models
 {
     public class MetadataModel
     {

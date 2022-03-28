@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using System.Collections.Generic;
+using HDPortraits.Models;
 
 namespace HDPortraits
 {
@@ -27,7 +28,6 @@ namespace HDPortraits
             harmony = new(ModManifest.UniqueID);
             ModID = ModManifest.UniqueID;
             helper.Events.GameLoop.DayStarted += (object sender, DayStartedEventArgs ev) => ReloadData();
-            helper.Events.Player.Warped += PortraitDrawPatch.Warped;
             harmony.PatchAll();
         }
         public override object GetApi()

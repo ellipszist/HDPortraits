@@ -4,7 +4,7 @@ using StardewValley.Menus;
 using System;
 using System.Reflection;
 
-namespace HDPortraits
+namespace HDPortraits.Patches
 {
     [HarmonyPatch]
     class DialoguePatch
@@ -23,24 +23,24 @@ namespace HDPortraits
 
         public static void Init(DialogueBox __instance)
         {
+            bool overriden = __instance.characterDialogue?.overridePortrait != null;
             NPC npc = __instance.characterDialogue?.speaker;
-            if (npc != null)
+            if (npc != null || overriden)
             {
-                if (ModEntry.TryGetMetadata(npc.getTextureName(), PortraitDrawPatch.GetSuffix(npc), out var meta))
+                if (ModEntry.TryGetMetadata(overriden ? PortraitDrawPatch.overrideName.Value ?? "NULL" : npc.getTextureName(), PortraitDrawPatch.GetSuffix(npc), out var meta))
                 {
                     PortraitDrawPatch.lastLoaded.Value.Add(meta);
                     PortraitDrawPatch.currentMeta.Value = meta;
                     meta.Reload();
                 }
             }
-            PortraitDrawPatch.overridden.Value = __instance.characterDialogue?.overridePortrait != null;
         }
 
         [HarmonyPatch(typeof(DialogueBox), "closeDialogue")]
         [HarmonyPostfix]
         public static void Finish()
         {
-            PortraitDrawPatch.overridden.Value = false;
+            PortraitDrawPatch.overrideName.Value = null;
             PortraitDrawPatch.currentMeta.Value = null;
         }
     }
