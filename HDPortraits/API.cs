@@ -44,8 +44,14 @@ namespace HDPortraits
         {
             DrawPortraitOrOverride(b, npc, index, new Rectangle(position, new(256, 256)), color, reset);
         }
+        public string GetEventPortraitFor(NPC npc)
+        {
+            return npc.uniquePortraitActive ? PortraitDrawPatch.EventOverrides.Value.GetValueOrDefault(npc.Name, null) : null;
+        }
         public (Rectangle, Texture2D) GetTextureAndRegion(NPC npc, int index, int elapsed = -1, bool reset = false)
         {
+            if(npc.uniquePortraitActive)
+                return GetTextureAndRegion(npc.Name, PortraitDrawPatch.EventOverrides.Value[npc.Name], index, elapsed, reset);
             return GetTextureAndRegion(npc.getTextureName(), PortraitDrawPatch.GetSuffix(npc), index, elapsed, reset);
         }
         public (Rectangle, Texture2D) GetTextureAndRegion(string name, string suffix, int index, int elapsed = -1, bool reset = false)

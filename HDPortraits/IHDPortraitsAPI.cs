@@ -96,5 +96,11 @@ namespace HDPortraits
         /// <param name="color">Tint</param>
         /// <param name="reset">Whether or not to reset animations this tick</param>
         public void DrawPortraitOrOverride(SpriteBatch b, NPC npc, int index, Point position, Color? color = null, bool reset = false);
+        /// <summary>
+        /// Get an NPC's portrait suffix if it's overridden by an event
+        /// </summary>
+        /// <param name="npc">The NPC</param>
+        /// <returns>The suffix, or null if the portrait is not being overridden</returns>
+        public string GetEventPortraitFor(NPC npc);
     }
 }
