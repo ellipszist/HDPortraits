@@ -76,6 +76,8 @@ namespace HDPortraits.Patches
             Rectangle ret = (currentMeta.Value?.Animation != null) ?
                 currentMeta.Value.Animation.GetSourceRegion(texture, asize, index, Game1.currentGameTime.ElapsedGameTime.Milliseconds) :
                 Game1.getSourceRectForStandardTileSheet(texture, index, asize, asize);
+            if (!texture.Bounds.Contains(ret))
+                ret = new(0, 0, asize, asize);
             return ret;
         }
         public static string GetSuffix(NPC npc)
