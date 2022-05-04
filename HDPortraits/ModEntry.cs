@@ -56,30 +56,31 @@ namespace HDPortraits
         }
         public static bool TryGetMetadata(string name, string suffix, out MetadataModel meta)
         {
-            if (((suffix != null && 
-                portraitSizes.TryGetValue($"{name}_{suffix}", out meta)) ||
-                portraitSizes.TryGetValue(name, out meta)) &&
-                meta is not null)
+            string path = $"{name}_{suffix}";
+            if (suffix is not null)
             {
-                return true; //cached
+                if (portraitSizes.TryGetValue(path, out meta) && meta is not null)
+                    return true; //cached
+
+                if (!failedPaths.Contains(path) && 
+                    (Utils.TryLoadAsset("Mods/HDPortraits/" + path, out meta) ||
+                    backupPortraits.TryGetValue(path, out meta)) &&
+                    meta is not null)
+                {
+                    meta.defaultPath = "Portraits/" + path;
+                    portraitSizes[path] = meta;
+                    return true; //suffix
+                }
             }
 
-            string path = $"{name}_{suffix}";
+            //no suffix or suffix not found
+            if (portraitSizes.TryGetValue(name, out meta) && meta is not null)
+                return true; //cached
 
             if (failedPaths.Contains(path))
             {
                 meta = null;
                 return false;
-            }
-
-            if (suffix != null && 
-                (Utils.TryLoadAsset("Mods/HDPortraits/" + path, out meta) || 
-                backupPortraits.TryGetValue(path, out meta)) && 
-                meta is not null)
-            {
-                meta.defaultPath = "Portraits/" + path;
-                portraitSizes[path] = meta;
-                return true; //suffix
             }
 
             if ((Utils.TryLoadAsset("Mods/HDPortraits/" + name, out meta) || 
@@ -91,7 +92,7 @@ namespace HDPortraits
                 return true; //base
             }
 
-            monitor.Log($"No Data for {name}_{suffix}");
+            monitor.Log($"No Data for {path}");
 
             failedPaths.Add(path);
             meta = null;
