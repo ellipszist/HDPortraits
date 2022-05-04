@@ -19,6 +19,8 @@ namespace HDPortraits.Patches
         [HarmonyPostfix]
         internal static void Init(ShopMenu __instance)
         {
+            ModEntry.monitor.Log(__instance.portraitPerson?.Name);
+
             if (__instance.portraitPerson is null)
                 return; //non-npc portraits not supported yet
 

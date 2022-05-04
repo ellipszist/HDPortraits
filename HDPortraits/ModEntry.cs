@@ -91,6 +91,8 @@ namespace HDPortraits
                 return true; //base
             }
 
+            monitor.Log($"No Data for {name}_{suffix}");
+
             failedPaths.Add(path);
             meta = null;
             return false; //not found

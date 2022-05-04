@@ -9,9 +9,6 @@ namespace HDPortraits.Patches
     [HarmonyPatch]
     class DialoguePatch
     {
-
-        internal static FieldInfo islandwear = typeof(NPC).FieldNamed("isWearingIslandAttire");
-
         [HarmonyPatch(typeof(Dialogue),"exitCurrentDialogue")]
         [HarmonyPostfix]
         public static void Cleanup()

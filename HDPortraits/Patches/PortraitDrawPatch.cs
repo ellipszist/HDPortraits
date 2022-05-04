@@ -22,6 +22,7 @@ namespace HDPortraits.Patches
         internal static readonly PerScreen<MetadataModel> currentMeta = new();
         internal static readonly PerScreen<Dictionary<string, string>> EventOverrides = new(() => new());
         internal static readonly PerScreen<string> overrideName = new();
+        internal static FieldInfo islandwear = typeof(NPC).FieldNamed("isWearingIslandAttire");
 
         [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]
         [HarmonyTranspiler]
@@ -82,7 +83,7 @@ namespace HDPortraits.Patches
         }
         public static string GetSuffix(NPC npc)
         {
-            return (bool)DialoguePatch.islandwear.GetValue(npc) ? "Beach" : npc.uniquePortraitActive ? npc.currentLocation.Name : null;
+            return (bool)islandwear.GetValue(npc) ? "Beach" : npc.uniquePortraitActive ? npc.currentLocation.Name : null;
         }
         public static float GetScale()
         {
