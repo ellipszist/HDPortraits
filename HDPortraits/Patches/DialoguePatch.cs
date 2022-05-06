@@ -37,6 +37,7 @@ namespace HDPortraits.Patches
         [HarmonyPostfix]
         public static void Finish()
         {
+            Cleanup();
             PortraitDrawPatch.overrideName.Value = null;
             PortraitDrawPatch.currentMeta.Value = null;
         }
