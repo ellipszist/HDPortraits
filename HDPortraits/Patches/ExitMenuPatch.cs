@@ -2,10 +2,6 @@
 using StardewValley;
 using StardewValley.Menus;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HDPortraits.Patches
 {
@@ -24,6 +20,7 @@ namespace HDPortraits.Patches
         [HarmonyPostfix]
         internal static void PostfixEventExit()
         {
+            PortraitDrawPatch.NpcEventSuffixes.Value.Clear();
             DialoguePatch.Finish();
         }
     }

@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
@@ -22,7 +21,18 @@ namespace HDPortraits.Patches
         internal static readonly PerScreen<MetadataModel> currentMeta = new();
         internal static readonly PerScreen<Dictionary<string, string>> EventOverrides = new(() => new());
         internal static readonly PerScreen<string> overrideName = new();
+        internal static readonly PerScreen<Dictionary<NPC, string>> NpcEventSuffixes = new(() => new());
         internal static FieldInfo islandwear = typeof(NPC).FieldNamed("isWearingIslandAttire");
+
+        [HarmonyPatch(typeof(Event), "command_changePortrait")]
+        [HarmonyPostfix]
+        public static void changeActivePortraitOf(string[] split, Event __instance)
+        {
+            NPC n = __instance.getActorByName(split[1]) ?? Game1.getCharacterFromName(split[1]);
+            NpcEventSuffixes.Value.Add(n, split[2]);
+            if (Game1.activeClickableMenu is DialogueBox db && db.characterDialogue?.speaker == n)
+                DialoguePatch.Init(db);
+        }
 
         [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]
         [HarmonyTranspiler]
@@ -83,7 +93,9 @@ namespace HDPortraits.Patches
         }
         public static string GetSuffix(NPC npc)
         {
-            return (bool)islandwear.GetValue(npc) ? "Beach" : npc.uniquePortraitActive ? npc.currentLocation.Name : null;
+            return NpcEventSuffixes.Value.TryGetValue(npc, out string s) ? s : 
+                (bool)islandwear.GetValue(npc) ? "Beach" : 
+                npc.uniquePortraitActive ? npc.currentLocation.Name : null;
         }
         public static float GetScale()
         {
