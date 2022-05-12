@@ -19,7 +19,6 @@ namespace HDPortraits.Patches
         private static ILHelper patcher = SetupPatch();
         internal static readonly PerScreen<HashSet<MetadataModel>> lastLoaded = new(() => new());
         internal static readonly PerScreen<MetadataModel> currentMeta = new();
-        internal static readonly PerScreen<Dictionary<string, string>> EventOverrides = new(() => new());
         internal static readonly PerScreen<string> overrideName = new();
         internal static readonly PerScreen<Dictionary<NPC, string>> NpcEventSuffixes = new(() => new());
         internal static FieldInfo islandwear = typeof(NPC).FieldNamed("isWearingIslandAttire");
@@ -31,16 +30,22 @@ namespace HDPortraits.Patches
             NPC n = __instance.getActorByName(split[1]) ?? Game1.getCharacterFromName(split[1]);
             NpcEventSuffixes.Value.Add(n, split[2]);
             if (Game1.activeClickableMenu is DialogueBox db && db.characterDialogue?.speaker == n)
+            {
+                DialoguePatch.Finish();
                 DialoguePatch.Init(db);
+            }
+        }
+        
+        [HarmonyPatch(typeof(Event), "cleanup")]
+        [HarmonyPostfix]
+        public static void eventCleanup()
+        {
+            NpcEventSuffixes.Value.Clear();
         }
 
         [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]
         [HarmonyTranspiler]
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            foreach (var code in patcher.Run(instructions))
-                yield return code;
-        }
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) => patcher.Run(instructions);
         public static ILHelper SetupPatch()
         {
             return new ILHelper("Dialogue Patch")
