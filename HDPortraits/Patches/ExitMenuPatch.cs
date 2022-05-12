@@ -16,9 +16,9 @@ namespace HDPortraits.Patches
                 DialoguePatch.Finish();
         }
 
-        [HarmonyPatch(typeof(Event), "exitEvent")]
+        [HarmonyPatch(typeof(Event), "cleanup")]
         [HarmonyPostfix]
-        internal static void PostfixEventExit()
+        internal static void PostfixEventCleanup()
         {
             PortraitDrawPatch.NpcEventSuffixes.Value.Clear();
             DialoguePatch.Finish();

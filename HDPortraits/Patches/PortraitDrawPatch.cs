@@ -35,13 +35,6 @@ namespace HDPortraits.Patches
                 DialoguePatch.Init(db);
             }
         }
-        
-        [HarmonyPatch(typeof(Event), "cleanup")]
-        [HarmonyPostfix]
-        public static void eventCleanup()
-        {
-            NpcEventSuffixes.Value.Clear();
-        }
 
         [HarmonyPatch(typeof(DialogueBox), "drawPortrait")]
         [HarmonyTranspiler]
