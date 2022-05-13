@@ -28,7 +28,7 @@ namespace HDPortraits.Patches
         public static void changeActivePortraitOf(string[] split, Event __instance)
         {
             NPC n = __instance.getActorByName(split[1]) ?? Game1.getCharacterFromName(split[1]);
-            NpcEventSuffixes.Value.Add(n, split[2]);
+            NpcEventSuffixes.Value[n] = split[2];
             if (Game1.activeClickableMenu is DialogueBox db && db.characterDialogue?.speaker == n)
             {
                 DialoguePatch.Finish();
