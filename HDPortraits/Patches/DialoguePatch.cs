@@ -29,12 +29,13 @@ namespace HDPortraits.Patches
                     PortraitDrawPatch.lastLoaded.Value.Add(meta);
                     PortraitDrawPatch.currentMeta.Value = meta;
                     meta.Reload();
+                } else
+                {
+                    PortraitDrawPatch.currentMeta.Value = null;
                 }
             }
         }
 
-        [HarmonyPatch(typeof(DialogueBox), "closeDialogue")]
-        [HarmonyPostfix]
         public static void Finish()
         {
             Cleanup();

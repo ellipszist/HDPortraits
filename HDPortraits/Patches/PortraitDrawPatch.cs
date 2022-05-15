@@ -75,10 +75,7 @@ namespace HDPortraits.Patches
                 })
                 .Finish();
         }
-        public static Texture2D SwapTexture(Texture2D texture)
-        {
-            return currentMeta.Value?.overrideTexture?.Value ?? texture;
-        }
+        public static Texture2D SwapTexture(Texture2D texture) => currentMeta.Value?.overrideTexture.Value ?? texture;
         public static Rectangle GetData(Texture2D texture, int index)
         {
             int asize = currentMeta.Value?.Size ?? 64;
@@ -95,9 +92,6 @@ namespace HDPortraits.Patches
                 (bool)islandwear.GetValue(npc) ? "Beach" : 
                 npc.uniquePortraitActive ? npc.currentLocation.Name : null;
         }
-        public static float GetScale()
-        {
-            return currentMeta.Value is not null ? 256f / currentMeta.Value.Size : 4f;
-        }
+        public static float GetScale() => currentMeta.Value is not null ? 256f / currentMeta.Value.Size : 4f;
     }
 }
