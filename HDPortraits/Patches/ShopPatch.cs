@@ -17,14 +17,21 @@ namespace HDPortraits.Patches
     {
         [HarmonyPatch("setUpShopOwner")]
         [HarmonyPostfix]
-        internal static void Init(ShopMenu __instance)
+        internal static void Init(ShopMenu __instance, string who)
         {
-            ModEntry.monitor.Log(__instance.portraitPerson?.Name);
+            ModEntry.monitor.Log(who);
 
-            if (__instance.portraitPerson is null)
-                return; //non-npc portraits not supported yet
+            if (who is null)
+                return;
 
-            if (ModEntry.TryGetMetadata(__instance.portraitPerson.getTextureName(), PortraitDrawPatch.GetSuffix(__instance.portraitPerson), out var meta))
+            string name = __instance.portraitPerson?.Name is not null ?
+                __instance.portraitPerson.getTextureName() : NPC.getTextureNameForCharacter(who);
+            string suffix = null;
+
+            if(__instance.portraitPerson is not null)
+                suffix = PortraitDrawPatch.GetSuffix(__instance.portraitPerson);
+
+            if (ModEntry.TryGetMetadata(name, suffix, out var meta))
             {
                 PortraitDrawPatch.lastLoaded.Value.Add(meta);
                 PortraitDrawPatch.currentMeta.Value = meta;
