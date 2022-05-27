@@ -10,7 +10,7 @@ namespace HDPortraits.Models
         public int Size { set; get; } = 64;
         public AnimationModel Animation { get; set; } = null;
         public string Portrait { 
-            get { return portraitPath; }
+            get => portraitPath; 
             set {
                 portraitPath = value;
                 Reload();
@@ -27,41 +27,26 @@ namespace HDPortraits.Models
             overrideTexture = new(GetPortrait);
         }
 
-        public void Reload()
-        {
-            overrideTexture.Reset();
-        }
+        public void Reload() => overrideTexture.Reset();
 
         public Texture2D GetPortrait()
         {
             Animation?.Reset();
+
             if (portraitPath is not null)
-            {
-                try
-                {
-                    return ModEntry.helper.Content.Load<Texture2D>(portraitPath, ContentSource.GameContent);
-                }
-                catch (ContentLoadException)
-                {
-                    ModEntry.monitor.Log("Could not find image at game asset path: '" + portraitPath + "' .", LogLevel.Warn);
-                }
-            }
+                if(Utils.TryLoadAsset(portraitPath, out Texture2D texture))
+                    return texture;
+                else
+                    ModEntry.monitor.Log($"Could not find image at game asset path: '{portraitPath}'.", LogLevel.Warn);
+
             if (defaultPath is not null)
-            {
-                try
-                {
-                    return ModEntry.helper.Content.Load<Texture2D>(defaultPath, ContentSource.GameContent);
-                }
-                catch (ContentLoadException)
-                {
-                    ModEntry.monitor.Log("Could not find default asset at path: '" + defaultPath + "'! An NPC is missing their portrait!", LogLevel.Error);
-                }
-            }
+                if (Utils.TryLoadAsset(defaultPath, out Texture2D texture))
+                    return texture;
+                else
+                    ModEntry.monitor.Log($"Could not find default asset at path: '{defaultPath}'! An NPC is missing their portrait!", LogLevel.Error);
+
             return null;
         }
-        public Texture2D GetDefault()
-        {
-            return savedDefault;
-        }
+        public Texture2D GetDefault() => savedDefault;
     }
 }
