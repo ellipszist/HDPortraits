@@ -21,13 +21,13 @@ namespace HDPortraits.Patches
         {
             ModEntry.monitor.Log(who);
 
-            if (who is null)
+            if (who is null && __instance.portraitPerson?.Name is null)
                 return;
 
             string name = __instance.portraitPerson?.Name is not null ?
                 __instance.portraitPerson.getTextureName() : NPC.getTextureNameForCharacter(who);
-            string suffix = null;
 
+            string suffix = null;
             if(__instance.portraitPerson is not null)
                 suffix = PortraitDrawPatch.GetSuffix(__instance.portraitPerson);
 
