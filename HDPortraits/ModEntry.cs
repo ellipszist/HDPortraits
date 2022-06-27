@@ -35,6 +35,7 @@ namespace HDPortraits
         {
             harmony.PatchAll();
             Patches.STFPatch.Init();
+            ReloadBaseData();
         }
         public override object GetApi() => api;
         private void LoadDefaultAsset(object _, AssetRequestedEventArgs ev)
