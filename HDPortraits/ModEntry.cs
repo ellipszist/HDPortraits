@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using System.Collections.Generic;
 using HDPortraits.Models;
+using System.Runtime.CompilerServices;
 
 namespace HDPortraits
 {
@@ -31,6 +32,7 @@ namespace HDPortraits
             helper.Events.Content.AssetsInvalidated += TryReloadAsset;
             helper.Events.GameLoop.GameLaunched += GameLaunched;
         }
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void GameLaunched(object _, GameLaunchedEventArgs ev)
         {
             harmony.PatchAll();

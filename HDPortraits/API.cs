@@ -6,6 +6,7 @@ using StardewValley;
 using System.Collections.Generic;
 using HDPortraits.Patches;
 using HDPortraits.Models;
+using System;
 
 namespace HDPortraits
 {
@@ -60,6 +61,12 @@ namespace HDPortraits
             Rectangle rect = (metadata.Animation != null) ?
                 metadata.Animation.GetSourceRegion(texture, metadata.Size, index, elapsed) :
                 Game1.getSourceRectForStandardTileSheet(texture, index, metadata.Size, metadata.Size);
+
+			rect.X = Math.Clamp(rect.X, 0, texture.Width);
+			rect.Y = Math.Clamp(rect.Y, 0, texture.Height);
+			rect.Width -= Math.Max(0, rect.Right - texture.Width);
+            rect.Height -= Math.Max(0, rect.Bottom - texture.Height);
+
             return (rect, texture);
         }
         public void ReloadData()
