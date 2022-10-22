@@ -37,7 +37,7 @@ namespace HDPortraits.Patches
             {
                 PortraitDrawPatch.lastLoaded.Value.Add(meta);
                 PortraitDrawPatch.currentMeta.Value = meta;
-                meta.Reload();
+                meta.Animation?.Reset();
             }
         }
         [HarmonyPatch("draw")]

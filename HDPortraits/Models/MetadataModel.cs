@@ -16,8 +16,8 @@ namespace HDPortraits.Models
             get => portraitPath; 
             set {
                 portraitPath = value;
-                Reload();
-            }
+				overrideTexture.Reload();
+			}
         }
 
         public readonly LazyAsset<Texture2D> overrideTexture;
@@ -33,8 +33,6 @@ namespace HDPortraits.Models
             };
             originalTexture = new(ModEntry.helper, () => originalPath);
         }
-
-        public void Reload() => overrideTexture.Reload();
 
         public bool TryGetTexture(out Texture2D texture)
         {
