@@ -75,7 +75,13 @@ namespace HDPortraits.Patches
             .Add(new CodeInstruction(OpCodes.Call, typeof(ShopPatch).MethodNamed("GetData")))
             .SkipTo(new CodeInstruction(OpCodes.Ldc_R4, 4f))
             .Remove(1)
-            .Add(new CodeInstruction(OpCodes.Call, typeof(PortraitDrawPatch).MethodNamed("GetScale")))
-            .Finish();
+			.Add(new CodeInstruction[]{ // region.Width / 16f
+                new(OpCodes.Ldloc_S, 5),
+				new(OpCodes.Ldfld, typeof(Rectangle).FieldNamed(nameof(Rectangle.Width))),
+				new(OpCodes.Conv_R4),
+				new(OpCodes.Ldc_R4, 16f), // (n / 64) * 4; 64 is default size
+                new(OpCodes.Div)
+			})
+			.Finish();
     }
 }
