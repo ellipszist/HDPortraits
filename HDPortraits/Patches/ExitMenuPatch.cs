@@ -12,8 +12,7 @@ namespace HDPortraits.Patches
         [HarmonyPrefix]
         internal static void PrefixExitMenu()
         {
-            if (Game1.activeClickableMenu is DialogueBox)
-                DialoguePatch.Finish();
+            DialoguePatch.Finish();
         }
 
         [HarmonyPatch(typeof(Event), "cleanup")]

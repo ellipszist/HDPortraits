@@ -36,6 +36,7 @@ namespace HDPortraits.Patches
                 meta.Animation?.Reset();
             }
         }
+
         [HarmonyPatch("draw")]
         [HarmonyTranspiler]
         internal static IEnumerable<CodeInstruction> drawPatch(IEnumerable<CodeInstruction> instructions, ILGenerator gen)
