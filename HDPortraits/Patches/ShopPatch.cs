@@ -16,6 +16,7 @@ namespace HDPortraits.Patches
     {
         [HarmonyPatch("setUpShopOwner")]
         [HarmonyPostfix]
+        [HarmonyPriority(Priority.Last)]
         internal static void Init(ShopMenu __instance, string who)
         {
             if (who is null && __instance.portraitPerson?.Name is null)
@@ -50,17 +51,6 @@ namespace HDPortraits.Patches
             return current.GetRegion(0, Game1.currentGameTime.ElapsedGameTime.Milliseconds);
         }
 
-        private static Rectangle log(Rectangle region)
-        {
-            ModEntry.monitor.LogOnce(region.ToString());
-            return region;
-        }
-        private static float log2(float what)
-        {
-            ModEntry.monitor.LogOnce(what.ToString());
-            return what;
-        }
-
         internal static ILHelper drawPatcher = new ILHelper(ModEntry.monitor, "Shop draw")
             .SkipTo(new CodeInstruction[]
             {
@@ -91,11 +81,9 @@ namespace HDPortraits.Patches
 			})
             .LoadLocal("region")
 			.Add(new CodeInstruction[]{ // (64 / n) * 4; 64 is default size. s = 256 / n
-                new(OpCodes.Call, typeof(ShopPatch).MethodNamed(nameof(log))),
 				new(OpCodes.Ldfld, typeof(Rectangle).FieldNamed(nameof(Rectangle.Width))),
 				new(OpCodes.Conv_R4),
-                new(OpCodes.Div),
-                new(OpCodes.Call, typeof(ShopPatch).MethodNamed(nameof(log2)))
+                new(OpCodes.Div)
 			})
 			.Finish();
     }

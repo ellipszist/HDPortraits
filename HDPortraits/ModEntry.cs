@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using HDPortraits.Models;
 using System.Runtime.CompilerServices;
 using AeroCore.Utils;
+using AeroCore.Generics;
+using StardewValley;
 
 namespace HDPortraits
 {
@@ -15,8 +17,9 @@ namespace HDPortraits
         internal static IModHelper helper;
         internal static Harmony harmony;
         internal static string ModID;
-        private static IHDPortraitsAPI api = new API();
+        private static readonly IHDPortraitsAPI api = new API();
         private static readonly HashSet<string> failedPaths = new();
+        private static Dictionary<string, string> festivals;
 
         internal static Dictionary<string, MetadataModel> portraitSizes = new();
         internal static Dictionary<string, MetadataModel> backupPortraits = new();
@@ -29,10 +32,12 @@ namespace HDPortraits
             ModEntry.helper = Helper;
             harmony = new(ModManifest.UniqueID);
             ModID = ModManifest.UniqueID;
+            festivals = helper.ModContent.Load<Dictionary<string, string>>("assets/festivals.json");
             helper.Events.Content.AssetRequested += LoadDefaultAsset;
             helper.Events.Content.AssetsInvalidated += TryReloadAsset;
             helper.Events.GameLoop.GameLaunched += GameLaunched;
         }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void GameLaunched(object _, GameLaunchedEventArgs ev)
         {
@@ -72,8 +77,24 @@ namespace HDPortraits
                 failedPaths.Remove(id);
             }
         }
+        internal static string GetFestivalContext()
+        {
+            if (Game1.weatherIcon != Game1.weather_festival || Game1.whereIsTodaysFest != Game1.currentLocation.Name)
+                return null;
+
+            var key = Game1.currentSeason + Game1.dayOfMonth.ToString();
+            if (!festivals.TryGetValue(key, out var context))
+            {
+                var data = helper.GameContent.Load<Dictionary<string, string>>("Data/Festivals/" + key);
+                if (!data.TryGetValue("id", out context))
+                    return null;
+            }
+            return context;
+        }
         public static bool TryGetMetadata(string name, string suffix, out MetadataModel meta, bool forceSuffix = false)
         {
+            var was_null_suffix = suffix is null;
+            suffix ??= GetFestivalContext();
             string path = $"{name}_{suffix}";
             if (suffix is not null)
             {
@@ -89,7 +110,7 @@ namespace HDPortraits
                     portraitSizes[path] = meta;
                     return true; //suffix
                 }
-                if (forceSuffix)
+                if (forceSuffix && !was_null_suffix)
                     return false;
             }
 
