@@ -46,7 +46,6 @@ namespace HDPortraits.Models
             {
                 ModEntry.monitor.Log($"An error occurred attempting to load portrait override @ '{portraitPath}':\n{overrideTexture.LastError}", 
                     LogLevel.Error);
-				texture = originalTexture.Value;
 				return false;
             }
             return true;
