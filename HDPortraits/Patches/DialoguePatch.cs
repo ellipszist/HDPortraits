@@ -16,7 +16,7 @@ namespace HDPortraits.Patches
 
 		public static void Init(DialogueBox __instance)
 		{
-			var name = GetNameToUse(__instance.characterDialogue);
+			var name = GetNameToUse(__instance.characterDialogue, out var has_suffix);
 
 			if (name is not null)
 			{
@@ -24,7 +24,7 @@ namespace HDPortraits.Patches
 					ModEntry.monitor.Log("Could not retrieve portrait name for nameless NPC!", StardewModdingAPI.LogLevel.Warn);
 
 				var npc = __instance.characterDialogue.speaker;
-				if (ModEntry.TryGetMetadata(name, npc is not null ? PortraitDrawPatch.GetSuffix(npc) : null, out var meta))
+				if (ModEntry.TryGetMetadata(name, npc is not null && !has_suffix ? PortraitDrawPatch.GetSuffix(npc) : null, out var meta))
 				{
 					PortraitDrawPatch.lastLoaded.Value.Add(meta);
 					PortraitDrawPatch.currentMeta.Value = meta;
@@ -43,28 +43,33 @@ namespace HDPortraits.Patches
 			PortraitDrawPatch.currentMeta.Value = null;
 		}
 
-		public static string GetNameToUse(Dialogue dialogue)
+		public static string GetNameToUse(Dialogue dialogue, out bool includes_suffix)
 		{
+			includes_suffix = false;
+
 			if (dialogue is null)
 				return null;
 
 			if (dialogue.overridePortrait is not null)
 				return PortraitDrawPatch.overrideName.Value ?? "";
 
-			return GetTextureNameSync(dialogue.speaker);
+			return GetTextureNameSync(dialogue.speaker, includes_suffix);
 		}
 		
-		public static string GetTextureNameSync(NPC npc)
+		public static string GetTextureNameSync(NPC npc, out bool includes_suffix)
 		{
+			includes_suffix = false;
 			if (npc is not null)
 			{
+				if (npc.Name is not null)
+					return npc.getTextureName();
+
 				var synced = npc.syncedPortraitPath.Value;
 				if (synced is not null && synced.Length > 0)
+				{
+					includes_suffix = true;
 					return synced.Replace("Portraits\\", "");
-
-				var name = npc.getTextureName();
-				if (name is not null && name.Length > 0)
-					return name;
+				}
 
 				return "";
 			}

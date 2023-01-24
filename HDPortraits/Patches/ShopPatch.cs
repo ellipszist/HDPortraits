@@ -18,7 +18,7 @@ namespace HDPortraits.Patches
 		internal static void Init(ShopMenu __instance, string who)
 		{
 			var npc = __instance.portraitPerson;
-			var name = DialoguePatch.GetTextureNameSync(npc);
+			var name = DialoguePatch.GetTextureNameSync(npc, out var has_suffix);
 
 			if (who is null && name is null)
 				return;
@@ -28,9 +28,7 @@ namespace HDPortraits.Patches
 			if (name.Length is 0)
 				ModEntry.monitor.Log("Could not retrieve portrait name for nameless NPC!", StardewModdingAPI.LogLevel.Warn);
 
-			string suffix = null;
-			if(npc is not null)
-				suffix = PortraitDrawPatch.GetSuffix(npc);
+			string suffix = npc is not null && !has_suffix ? PortraitDrawPatch.GetSuffix(npc) : null;
 
 			if (ModEntry.TryGetMetadata(name, suffix, out var meta))
 			{
