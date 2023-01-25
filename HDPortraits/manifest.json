@@ -10,7 +10,8 @@
   "Dependencies": [
 	  {
 		  "UniqueID": "tlitookilakin.AeroCore",
-		  "IsRequired": true
+		  "IsRequired": true,
+		  "MinimumVersion": "0.9.4"
 	  }
   ] 
 }

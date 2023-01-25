@@ -53,7 +53,7 @@ namespace HDPortraits.Patches
 			if (dialogue.overridePortrait is not null)
 				return PortraitDrawPatch.overrideName.Value ?? "";
 
-			return GetTextureNameSync(dialogue.speaker, includes_suffix);
+			return GetTextureNameSync(dialogue.speaker, out includes_suffix);
 		}
 		
 		public static string GetTextureNameSync(NPC npc, out bool includes_suffix)
