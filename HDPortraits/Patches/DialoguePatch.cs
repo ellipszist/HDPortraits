@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 
@@ -64,11 +65,20 @@ namespace HDPortraits.Patches
 				if (npc.Name is not null)
 					return npc.getTextureName();
 
+				var portraitPath = "Portraits" + PathUtilities.PreferredAssetSeparator;
+
 				var synced = npc.syncedPortraitPath.Value;
 				if (synced is not null && synced.Length > 0)
 				{
 					includes_suffix = true;
-					return synced.Replace("Portraits\\", "");
+					return synced[10..];
+				}
+
+				var texName = npc.Portrait?.Name;
+				if (texName is not null && texName.StartsWith(portraitPath))
+				{
+					includes_suffix = true;
+					return texName[10..];
 				}
 
 				return "";
