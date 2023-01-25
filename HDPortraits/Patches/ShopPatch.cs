@@ -41,9 +41,7 @@ namespace HDPortraits.Patches
 		[HarmonyPatch("draw")]
 		[HarmonyTranspiler]
 		internal static IEnumerable<CodeInstruction> drawPatch(IEnumerable<CodeInstruction> instructions, ILGenerator gen)
-		{
-			return drawPatcher.Run(instructions, gen);
-		}
+			=> drawPatcher.Run(instructions, gen);
 
 		internal static Rectangle GetData()
 		{
