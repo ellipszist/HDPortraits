@@ -84,9 +84,12 @@ namespace HDPortraits.Patches
 				.Finish();
 		public static Texture2D SwapTexture(Texture2D texture) 
 			=> currentMeta.Value is not null && currentMeta.Value.TryGetTexture(out var tex) ? tex : texture;
+
 		public static Rectangle GetData(Texture2D texture, int index)
-			=> currentMeta.Value?.GetRegion(index, Game1.currentGameTime.ElapsedGameTime.Milliseconds) ??
-			Game1.getSourceRectForStandardTileSheet(texture, index, 64, 64);
+			=> currentMeta.Value is null || (currentMeta.Value.TryGetTexture(out var tex) && texture == tex) ?
+			Game1.getSourceRectForStandardTileSheet(texture, index, 64, 64) :
+			currentMeta.Value.GetRegion(index, Game1.currentGameTime.ElapsedGameTime.Milliseconds);
+
 		public static string GetSuffix(NPC npc)
 		{
 			return NpcEventSuffixes.Value.TryGetValue(npc, out string s) ? s : 

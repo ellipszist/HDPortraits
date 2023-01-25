@@ -35,6 +35,10 @@ namespace HDPortraits.Patches
 					PortraitDrawPatch.currentMeta.Value = null;
 				}
 			}
+			else
+			{
+				PortraitDrawPatch.currentMeta.Value = null;
+			}
 		}
 
 		public static void Finish()

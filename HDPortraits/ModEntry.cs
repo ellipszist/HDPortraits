@@ -140,6 +140,5 @@ namespace HDPortraits
 			meta = null;
 			return false; //not found
 		}
-		// TODO: add support for Better Shop Menu & Lookup Anything
 	}
 }

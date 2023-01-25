@@ -17,7 +17,7 @@ namespace HDPortraits.Integration
 		private static MethodInfo ShopName;
 		internal static void Init()
 		{
-			ModEntry.monitor.Log("Patching STF...", LogLevel.Debug);
+			ModEntry.monitor.Log("Patching STF...");
 			STFShop = AccessTools.TypeByName("ShopTileFramework.Shop.ItemShop");
 			ShopName = AccessTools.PropertyGetter(STFShop, "ShopName");
 
