@@ -86,7 +86,7 @@ namespace HDPortraits.Patches
 			=> currentMeta.Value is not null && currentMeta.Value.TryGetTexture(out var tex) ? tex : texture;
 
 		public static Rectangle GetData(Texture2D texture, int index)
-			=> currentMeta.Value is null || (currentMeta.Value.TryGetTexture(out var tex) && texture == tex) ?
+			=> currentMeta.Value is null || !(currentMeta.Value.TryGetTexture(out var tex) && texture == tex) ?
 			Game1.getSourceRectForStandardTileSheet(texture, index, 64, 64) :
 			currentMeta.Value.GetRegion(index, Game1.currentGameTime.ElapsedGameTime.Milliseconds);
 
